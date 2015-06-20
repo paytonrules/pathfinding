@@ -66,6 +66,17 @@ func (g gameObject) Draw(r *sdl.Renderer) {
 }
 
 func Draw(r *sdl.Renderer, g *graph.Graph) {
+	for row := range g.Rows() {
+		for col := range g.Column(row) {
+			x := int32(row) * pixelSize * roomSize
+			y := int32(col) * pixelSize * roomSize
+			width := roomSize * pixelSize
+			height := roomSize * pixelSize
+			rect := &sdl.Rect{x, y, width, height}
+
+			r.DrawRect(rect)
+		}
+	}
 }
 
 func DrawPaths(r *sdl.Renderer, p interface{}) {
@@ -90,7 +101,7 @@ func main() {
 	var event sdl.Event
 	running := true
 
-	myGraph := graph.Create(100, 100)
+	myGraph := graph.New(100, 100)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
