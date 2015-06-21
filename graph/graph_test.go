@@ -15,12 +15,15 @@ func TestGraphCreation(t *testing.T) {
 	}
 }
 
-func TestRows(t *testing.T) {
-	graph := New(2, 90)
+func TestEachNode(t *testing.T) {
+	graph := New(2, 2)
+	nodes := make([]*Node, 0, 4)
 
-	assert.Equal(t, 2, len(graph.Rows()))
-	assert.Equal(t, 90, len(graph.Rows()[0]))
-	assert.Equal(t, 90, len(graph.Rows()[1]))
+	graph.EachNode(func(n *Node) {
+		nodes = append(nodes, n)
+	})
+
+	assert.Equal(t, 4, len(nodes))
 }
 
 func TestColumn(t *testing.T) {

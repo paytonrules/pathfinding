@@ -5,24 +5,35 @@ type Location struct {
 }
 
 type Graph struct {
-	nodeList [][]int
+	nodeList [][]*Node
+}
+
+type Node struct {
 }
 
 func New(x, y int) *Graph {
 	graph := &Graph{}
-	graph.nodeList = make([][]int, x)
+	graph.nodeList = make([][]*Node, x)
 	for i := range graph.nodeList {
-		graph.nodeList[i] = make([]int, y)
+		graph.nodeList[i] = make([]*Node, y)
 	}
 	return graph
 }
 
-func (g *Graph) Rows() [][]int {
+func (g *Graph) Rows() [][]*Node {
 	return g.nodeList
 }
 
-func (g *Graph) Column(r int) []int {
+func (g *Graph) Column(r int) []*Node {
 	return g.nodeList[r]
+}
+
+func (g *Graph) EachNode(f func(*Node)) {
+	for _, r := range g.nodeList {
+		for _, n := range r {
+			f(n)
+		}
+	}
 }
 
 func GetPath(from, to *Location) interface{} {
