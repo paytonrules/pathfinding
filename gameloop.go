@@ -101,7 +101,7 @@ func main() {
 	var event sdl.Event
 	running := true
 
-	myGraph := graph.New(100, 100)
+	myGraph := graph.New(17, 12)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
