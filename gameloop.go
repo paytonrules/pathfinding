@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/paytonrules/pathfinding/graph"
+	"github.com/paytonrules/pathfinding/grid"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -12,11 +12,10 @@ var roomSize int32 = 12
 
 type gameObject struct {
 	geometry []sdl.Rect
-	location *graph.Location
+	location *grid.Room
 }
 
 var alien *gameObject = &gameObject{
-	location: &graph.Location{X: 70, Y: 100},
 	geometry: []sdl.Rect{
 		{2, 0, 1, 1},
 		{8, 0, 1, 1},
@@ -40,7 +39,6 @@ var alien *gameObject = &gameObject{
 }
 
 var gunner *gameObject = &gameObject{
-	location: &graph.Location{X: 20, Y: 80},
 	geometry: []sdl.Rect{
 		{5, 0, 1, 1},
 		{4, 1, 3, 2},
@@ -53,8 +51,8 @@ func (g gameObject) Draw(r *sdl.Renderer) {
 	tGeometry := make([]sdl.Rect, cap(g.geometry))
 	copy(tGeometry, g.geometry)
 	for index := range g.geometry {
-		tGeometry[index].X += int32(g.location.X)
-		tGeometry[index].Y += int32(g.location.Y)
+		tGeometry[index].X += int32(g.location.X) * roomSize
+		tGeometry[index].Y += int32(g.location.Y) * roomSize
 	}
 	for index := range tGeometry {
 		tGeometry[index].X *= pixelSize
@@ -65,18 +63,16 @@ func (g gameObject) Draw(r *sdl.Renderer) {
 	r.FillRects(tGeometry)
 }
 
-func Draw(r *sdl.Renderer, g *graph.Graph) {
-	for row := range g.Rows() {
-		for col := range g.Column(row) {
-			x := int32(row) * pixelSize * roomSize
-			y := int32(col) * pixelSize * roomSize
-			width := roomSize * pixelSize
-			height := roomSize * pixelSize
-			rect := &sdl.Rect{x, y, width, height}
+func Draw(r *sdl.Renderer, g *grid.Grid) {
+	g.EachRoom(func(room *grid.Room) {
+		x := int32(room.X) * pixelSize * roomSize
+		y := int32(room.Y) * pixelSize * roomSize
+		width := roomSize * pixelSize
+		height := roomSize * pixelSize
+		rect := &sdl.Rect{x, y, width, height}
 
-			r.DrawRect(rect)
-		}
-	}
+		r.DrawRect(rect)
+	})
 }
 
 func DrawPaths(r *sdl.Renderer, p interface{}) {
@@ -101,7 +97,9 @@ func main() {
 	var event sdl.Event
 	running := true
 
-	myGraph := graph.New(17, 12)
+	myGrid := grid.New(17, 12)
+	gunner.location, _ = myGrid.RoomAt(3, 4)
+	alien.location, _ = myGrid.RoomAt(12, 9)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -110,13 +108,13 @@ func main() {
 			}
 		}
 
-		path := graph.GetPath(gunner.location, alien.location)
-
-		renderer.SetDrawColor(0, 0, 0, 255)
-		renderer.Clear()
+		path := grid.GetPath(gunner.location, alien.location)
 
 		renderer.SetDrawColor(255, 255, 255, 255)
-		Draw(renderer, myGraph)
+		renderer.Clear()
+
+		renderer.SetDrawColor(38, 38, 38, 255)
+		Draw(renderer, myGrid)
 		DrawPaths(renderer, path)
 
 		alien.Draw(renderer)
