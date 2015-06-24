@@ -98,8 +98,8 @@ func main() {
 	running := true
 
 	myGrid := grid.New(17, 12)
-	gunner.location, _ = myGrid.RoomAt(3, 4)
-	alien.location, _ = myGrid.RoomAt(12, 9)
+	gunner.location, _ = myGrid.RoomAt(15, 7)
+	alien.location, _ = myGrid.RoomAt(1, 1)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
