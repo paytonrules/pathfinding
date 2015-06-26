@@ -27,3 +27,7 @@ func (g *Graph) EachAdjacencyList(cb func(n Node, l []Node)) {
 		cb(key, value)
 	}
 }
+
+func (g *Graph) Path(from, to Node) []Node {
+	return nil
+}

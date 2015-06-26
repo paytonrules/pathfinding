@@ -87,7 +87,3 @@ func (g *Grid) adjacentTo(r *Room) []graph.Node {
 
 	return adjacentRooms
 }
-
-func GetPath(from, to *Room) interface{} {
-	return nil
-}

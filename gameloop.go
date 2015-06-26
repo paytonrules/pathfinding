@@ -102,6 +102,22 @@ func DrawGraph(r *sdl.Renderer, g *graph.Graph) {
 	})
 }
 
+func DrawPath(r *sdl.Renderer, nodes []graph.Node) {
+	for index, node := range nodes {
+		if index != 0 {
+			previousNode := nodes[index-1]
+			startRoom := previousNode.(*grid.Room)
+			endRoom := node.(*grid.Room)
+			x1 := int32(startRoom.X) * pixelSize * roomSize
+			y1 := int32(startRoom.Y) * pixelSize * roomSize
+			x2 := int32(endRoom.X) * roomSize * pixelSize
+			y2 := int32(endRoom.Y) * roomSize * pixelSize
+
+			r.DrawLine(int(x1), int(y1), int(x2), int(y2))
+		}
+	}
+}
+
 func setupMap(g *grid.Grid) {
 	var blockedRooms = [...][2]int{
 		{1, 3},
@@ -195,6 +211,7 @@ func main() {
 	gunner.location, _ = myGrid.RoomAt(15, 7)
 	alien.location, _ = myGrid.RoomAt(1, 1)
 	graph := graph.NewFromGrid(myGrid)
+	path := graph.Path(gunner.location, alien.location)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -203,13 +220,16 @@ func main() {
 			}
 		}
 
-		renderer.SetDrawColor(255, 255, 255, 255)
+		renderer.SetDrawColor(205, 201, 201, 255)
 		renderer.Clear()
 
-		renderer.SetDrawColor(38, 38, 38, 255)
+		renderer.SetDrawColor(10, 10, 10, 255)
 		Draw(renderer, myGrid)
 		DrawGraph(renderer, graph)
+		renderer.SetDrawColor(200, 0, 0, 255)
+		DrawPath(renderer, path)
 
+		renderer.SetDrawColor(0, 100, 0, 255)
 		alien.Draw(renderer)
 		gunner.Draw(renderer)
 		renderer.Present()
