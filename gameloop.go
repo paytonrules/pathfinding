@@ -72,7 +72,11 @@ func Draw(r *sdl.Renderer, g *grid.Grid) {
 		height := roomSize * pixelSize
 		rect := &sdl.Rect{x, y, width, height}
 
-		r.DrawRect(rect)
+		if room.Blocked {
+			r.FillRect(rect)
+		} else {
+			r.DrawRect(rect)
+		}
 	})
 }
 
@@ -98,6 +102,75 @@ func DrawGraph(r *sdl.Renderer, g *graph.Graph) {
 	})
 }
 
+func setupMap(g *grid.Grid) {
+	var blockedRooms = [...][2]int{
+		{1, 3},
+		{3, 0},
+		{3, 1},
+		{3, 2},
+		{3, 3},
+		{3, 4},
+		{3, 7},
+		{3, 9},
+		{3, 10},
+		{3, 11},
+		{4, 7},
+		{4, 9},
+		{4, 10},
+		{4, 11},
+		{5, 7},
+		{5, 9},
+		{5, 10},
+		{5, 11},
+		{6, 3},
+		{6, 4},
+		{6, 5},
+		{7, 3},
+		{7, 4},
+		{7, 5},
+		{7, 6},
+		{7, 7},
+		{7, 8},
+		{8, 3},
+		{8, 4},
+		{8, 5},
+		{8, 6},
+		{8, 7},
+		{8, 8},
+		{10, 6},
+		{10, 7},
+		{10, 8},
+		{10, 9},
+		{11, 6},
+		{11, 7},
+		{11, 8},
+		{11, 9},
+		{11, 11},
+		{12, 1},
+		{12, 2},
+		{12, 3},
+		{12, 6},
+		{12, 7},
+		{12, 8},
+		{12, 9},
+		{12, 11},
+		{13, 1},
+		{13, 2},
+		{13, 3},
+		{14, 10},
+		{14, 11},
+		{15, 10},
+		{15, 11},
+		{16, 10},
+		{16, 11},
+	}
+
+	for _, val := range blockedRooms {
+		room, _ := g.RoomAt(val[0], val[1])
+		room.Blocked = true
+	}
+}
+
 func main() {
 	window, err := sdl.CreateWindow("Monster Path",
 		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
@@ -118,6 +191,7 @@ func main() {
 	running := true
 
 	myGrid := grid.New(17, 12)
+	setupMap(myGrid)
 	gunner.location, _ = myGrid.RoomAt(15, 7)
 	alien.location, _ = myGrid.RoomAt(1, 1)
 	graph := graph.NewFromGrid(myGrid)
