@@ -49,3 +49,21 @@ func TestGraphWithOneAdjacentNode(t *testing.T) {
 	assert.Equal(t, 1, len(graph.AdjacencyList))
 	assert.Equal(t, []Node{adjacentNode}, graph.AdjacencyList[node])
 }
+
+func TestGraphCanEnumerateItsAdjacencyLists(t *testing.T) {
+	adjacentNode := &simpleNode{}
+	node := &simpleNode{adjacentNodes: []Node{adjacentNode}}
+	grid := &simpleGrid{nodeList: []Node{node}}
+
+	graph := NewFromGrid(grid)
+
+	nodes := map[Node][]Node{}
+	graph.EachAdjacencyList(func(n Node, l []Node) {
+		nodes[n] = l
+	})
+
+	expected := map[Node][]Node{
+		node: []Node{adjacentNode},
+	}
+	assert.Equal(t, expected, nodes)
+}

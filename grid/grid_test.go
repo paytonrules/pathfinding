@@ -39,6 +39,14 @@ func TestEachRoomHasItsLocation(t *testing.T) {
 	assert.Equal(t, 1, room.Y)
 }
 
+func TestEachRoomHasAReferenceToTheGrid(t *testing.T) {
+	grid := New(2, 2)
+
+	grid.EachRoom(func(r *Room) {
+		assert.Equal(t, r.grid, grid)
+	})
+}
+
 func TestRoomAt(t *testing.T) {
 	grid := New(3, 3)
 

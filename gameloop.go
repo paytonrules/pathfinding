@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/paytonrules/pathfinding/graph"
 	"github.com/paytonrules/pathfinding/grid"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -75,7 +76,26 @@ func Draw(r *sdl.Renderer, g *grid.Grid) {
 	})
 }
 
-func DrawPaths(r *sdl.Renderer, p interface{}) {
+func DrawGraph(r *sdl.Renderer, g *graph.Graph) {
+	nodesDrawn := make(map[graph.Node]struct{})
+	g.EachAdjacencyList(func(n graph.Node, l []graph.Node) {
+		for _, d := range l {
+			_, drawn := nodesDrawn[d]
+
+			if !drawn {
+				startRoom := n.(*grid.Room)
+				endRoom := d.(*grid.Room)
+				x1 := int32(startRoom.X) * pixelSize * roomSize
+				y1 := int32(startRoom.Y) * pixelSize * roomSize
+				x2 := int32(endRoom.X) * roomSize * pixelSize
+				y2 := int32(endRoom.Y) * roomSize * pixelSize
+
+				r.DrawLine(int(x1), int(y1), int(x2), int(y2))
+			}
+		}
+
+		nodesDrawn[n] = struct{}{}
+	})
 }
 
 func main() {
@@ -100,6 +120,7 @@ func main() {
 	myGrid := grid.New(17, 12)
 	gunner.location, _ = myGrid.RoomAt(15, 7)
 	alien.location, _ = myGrid.RoomAt(1, 1)
+	graph := graph.NewFromGrid(myGrid)
 	for running {
 		for event = sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -108,14 +129,12 @@ func main() {
 			}
 		}
 
-		path := grid.GetPath(gunner.location, alien.location)
-
 		renderer.SetDrawColor(255, 255, 255, 255)
 		renderer.Clear()
 
 		renderer.SetDrawColor(38, 38, 38, 255)
 		Draw(renderer, myGrid)
-		DrawPaths(renderer, path)
+		DrawGraph(renderer, graph)
 
 		alien.Draw(renderer)
 		gunner.Draw(renderer)

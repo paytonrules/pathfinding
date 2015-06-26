@@ -21,3 +21,9 @@ func NewFromGrid(g Grid) *Graph {
 	}
 	return graph
 }
+
+func (g *Graph) EachAdjacencyList(cb func(n Node, l []Node)) {
+	for key, value := range g.AdjacencyList {
+		cb(key, value)
+	}
+}

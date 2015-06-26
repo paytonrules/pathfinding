@@ -19,7 +19,7 @@ func New(x, y int) *Grid {
 		grid.rooms[i] = make([]*Room, y)
 
 		for j := range grid.rooms[i] {
-			grid.rooms[i][j] = &Room{X: i, Y: j}
+			grid.rooms[i][j] = &Room{X: i, Y: j, grid: grid}
 		}
 	}
 	return grid
